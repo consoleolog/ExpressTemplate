@@ -1,16 +1,29 @@
 import "reflect-metadata";
 import express, {Request, Response} from "express";
-import {MetadataKeys} from "./decorator/metadata.key";
+import {MetadataKeys} from "./global/config/decorator/metadata.key";
+import {MainController} from "./controller/main.controller";
+import {NotRegisteredException} from "./global/exception/notRegisteredException";
 
 export class IocContainer {
-    private controllers: any[] = [];
+    private objMap = new Map<Function, any>();
 
-    public register(controller: any) {
-        this.controllers.push(controller);
+    register<T>(obj: T | any): void {
+        this.objMap.set(obj.constructor, obj);
+    }
+
+    get<T>(type: new (...args: any[]) => T): T {
+        if (!this.objMap.has(type)) {
+            throw new NotRegisteredException(type, "Can't Find Type");
+        }
+        return this.objMap.get(type);
     }
 
     public compose(app: express.Application | any) {
-        this.controllers.forEach((ControllerClass) => {
+
+        const controller: any[] = [
+            MainController,
+        ];
+        controller.forEach((ControllerClass) => {
             const basePath = Reflect.getMetadata(MetadataKeys.BASE_PATH, ControllerClass);
             if (!basePath) return;
 

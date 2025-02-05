@@ -1,5 +1,5 @@
-import {GetMapping} from "../decorator/method.decorator";
-import Controller from "../decorator/controller.decorator";
+import {GetMapping} from "../global/config/decorator/method.decorator";
+import Controller from "../global/config/decorator/controller.decorator";
 import {Request, Response} from "express";
 
 @Controller("/")
